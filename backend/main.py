@@ -11,7 +11,6 @@ class Project(SQLModel, table = True):
     id: Optional[int] = Field(default=None, primary_key=True)
     description: str
     project_complexity: str
-    
     recommendations: List["Recommendation"] = Relationship(back_populates="project")
     
 class Recommendation(SQLModel, table= True):
@@ -162,16 +161,6 @@ def create_project(project: Project, session: SessionDep):
     session.commit()
     session.refresh(project)
     return project
-
-
-@app.get("/projects/")
-def read_porjects(
-    session: SessionDep,
-    offset: int = 0,
-    limit: Annotated[int, Query(le=100)] = 100,
-) -> list[Project]:
-    projects = session.exec(select(Project).offset(offset).limit(limit)).all()
-    return projects
 
 @app.post("/recommendations")
 def create_recommendations(project_id: int, session: SessionDep):
