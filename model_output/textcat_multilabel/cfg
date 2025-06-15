@@ -1,0 +1,12 @@
+{
+  "labels":[
+    "dashboard",
+    "realtime_system",
+    "web_app",
+    "ecommerce",
+    "ml_task",
+    "portfolio",
+    "mobile_app"
+  ],
+  "threshold":0.5
+}
