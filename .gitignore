@@ -1,39 +1,44 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
-*.so
-*.pyd
+*$py.class
 
 # Virtual environment
 venv/
-ENV/
-env/
-.venv/
 
-# Jupyter Notebook checkpoints
-.ipynb_checkpoints
-
-# SQLite database
-*.db
-
-# Python scripts generated temporarily
-tempCodeRunnerFile.py
-
-# VSCode
+# VS Code settings
 .vscode/
 
-# Configuration files
-*.cfg
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
 
-# Environment variables or secrets (if used)
+# macOS system files
+.DS_Store
+
+# Environment variable files
 .env
 
-# OS-specific files
-.DS_Store
-Thumbs.db
-
-# Model outputs (optional, uncomment if model_output is generated content)
-# backend/recommender/model_output/
-
-# Logs (if any)
+# Model output or temporary folders
+*.model
 *.log
+model_output/
+recommender/model_output/
+
+# SQLite DB files (optional)
+*.sqlite3
+*.db
+
+# Python egg metadata and cache
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# PyInstaller
+*.spec
+
+# Test and coverage
+.coverage
+htmlcov/
+.tox/
+pytest_cache/
