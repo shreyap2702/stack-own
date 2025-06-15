@@ -1,7 +1,7 @@
 #api endpoints i want to get project details, then 
-from typing import Annotated, Optional
+from typing import Annotated, Optional, List
 from fastapi import Depends, FastAPI, HTTPException, Query
-from sqlmodel import Field, Session, SQLModel, create_engine, select
+from sqlmodel import Field, Session, SQLModel, create_engine, select, Relationship
 
 class Project(SQLModel, Table = True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -10,6 +10,17 @@ class Project(SQLModel, Table = True):
     project_type: str
     curr_tech_stack: str
     project_complexity: str
+    
+    recommendations: List["Recommendation"] = Relationship(back_populates="project")
+    
+class Recommendation(SQLModel, Table= True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    project_id: int = Field(foreign_key="project.id")
+    tech_stack_json = str
+    reason_json = str
+    project_complexity = str
+    project: Optional[Project] = Relationship(back_populates="recommendations")
+    
     
 sqlite_file_name = "database.db"
 sqlite_url =  f"sqlite:///{sqlite_file_name}"
