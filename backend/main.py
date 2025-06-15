@@ -9,10 +9,7 @@ nlp_model = None #global model variable
 
 class Project(SQLModel, table = True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    name: str
     description: str
-    project_type: str
-    curr_tech_stack: str
     project_complexity: str
     
     recommendations: List["Recommendation"] = Relationship(back_populates="project")
