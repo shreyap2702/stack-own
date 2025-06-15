@@ -120,3 +120,9 @@ TRAIN_DATA = [
         }}
     ),
 ]
+
+converted_data = []
+
+for text, annonations in TRAIN_DATA :
+    cats = { cat: 1.0 if val else 0.0 for cat, val in annonations['cats'].items()}
+    converted_data.append((text, {"cats":cats}))
