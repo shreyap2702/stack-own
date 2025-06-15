@@ -1,44 +1,13 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
-
-# Virtual environment
 venv/
-
-# VS Code settings
-.vscode/
-
-# Jupyter Notebook checkpoints
-.ipynb_checkpoints/
-
-# macOS system files
-.DS_Store
-
-# Environment variable files
-.env
-
-# Model output or temporary folders
-*.model
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
 *.log
 model_output/
 recommender/model_output/
-
-# SQLite DB files (optional)
-*.sqlite3
-*.db
-
-# Python egg metadata and cache
-*.egg-info/
-.eggs/
-dist/
-build/
-
-# PyInstaller
-*.spec
-
-# Test and coverage
-.coverage
-htmlcov/
-.tox/
-pytest_cache/
+.DS_Store
+.env
+.vscode/
