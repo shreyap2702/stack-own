@@ -2,8 +2,12 @@
 from typing import Annotated, Optional, List
 from fastapi import Depends, FastAPI, HTTPException, Query
 from sqlmodel import Field, Session, SQLModel, create_engine, select, Relationship
+import spacy
+from pathlib import Path
 
-class Project(SQLModel, Table = True):
+nlp_model = None #global model variable
+
+class Project(SQLModel, table = True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str
     description: str
@@ -13,12 +17,11 @@ class Project(SQLModel, Table = True):
     
     recommendations: List["Recommendation"] = Relationship(back_populates="project")
     
-class Recommendation(SQLModel, Table= True):
+class Recommendation(SQLModel, table= True):
     id: Optional[int] = Field(default=None, primary_key=True)
     project_id: int = Field(foreign_key="project.id")
-    tech_stack_json = str
-    reason_json = str
-    project_complexity = str
+    tech_stack_json : str
+    reason_json : str
     project: Optional[Project] = Relationship(back_populates="recommendations")
     
     
@@ -40,7 +43,24 @@ app = FastAPI()
 
 @app.on_event("startup")
 def on_startup():
+    global nlp_model
     create_db_and_tables()
+    print("Database and tables created!")
+
+    try:
+        model_path= "./recommender/model_output"
+        nlp_model = spacy.load(model_path)
+        print("Model loaded successfully!")
+        print(f"Labels: {list(nlp_model.get_pipe('textcat_multilabel').labels)}")
+    except Exception as e:
+        print(f"Error loading model: {e}")
+        nlp_model = None
+
+def get_model():
+    if nlp_model is None:
+        raise HTTPException(status_code=500, detail="Model not loaded")
+    return nlp_model
+
     
 @app.post("/projects/")
 def create_project(project: Project, session: SessionDep):
@@ -60,6 +80,20 @@ def read_porjects(
     return projects
 
 @app.post("/recommendations")
-def create_recommendations():
-    return
+def create_recommendations(project_id: int, session: SessionDep):
+    model = get_model()
+    project = session.get(Project, project_id)
+    
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    doc = model(project.description)
+    classifications = doc.cats
+    
+    return {
+        "project_id": project_id,
+        "classifications": classifications,
+        "description": project.description
+    }
+    
 
