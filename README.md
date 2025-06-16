@@ -27,6 +27,8 @@ The tech stack recommender is a web tool that helps you pick the right technolog
 - **SQLModel**
 - **spaCy**
 - **Uvicorn**
+- **Node.js 16.0+** (for frontend)
+- **npm/yarn** (for frontend)
 
 ### Text Classification using Spacy
 
@@ -99,12 +101,28 @@ TECH_STACK_MAP = {
 4. **Response Generation**: Recommendations are generated with tech-stack mappings
 5. **Storage**: Project and recommendations are saved to database
 
+### Frontend Development
+The frontend is built using modern web technologies to provide a responsive and user-friendly interface:
+
+- **React 18+**: Component-based UI development
+- **Vite**: Fast development server and optimized builds
+- **Tailwind CSS**: Utility-first styling framework
+- **TypeScript**: Type-safe development
+
+The frontend communicates with the FastAPI backend to:
+- Submit project descriptions
+- Receive technology stack recommendations
+- Display categorized technology suggestions
+- Handle user interactions and form submissions
+
 ### Setup
 
 ### Prerequisites
 - Python 3.8 or higher
 - pip (Python package installer)
 - Git (for cloning the repository)
+- Node.js 16.0 or higher (for frontend)
+- npm or yarn (for frontend)
 
 ### Installation Steps
 
@@ -114,35 +132,27 @@ TECH_STACK_MAP = {
    cd stack-own
    ```
 
-2. **Navigate to Backend Directory**
+2. **Backend Setup**
    ```bash
    cd backend
-   ```
-
-3. **Create Virtual Environment**
-   ```bash
    python -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-4. **Install Dependencies**
-   ```bash
    pip install -r requirements.txt
-   ```
-
-5. **Download spaCy Model (if needed)**
-   ```bash
    python -m spacy download en_core_web_sm
-   ```
-
-6. **Train the Classification Model**
-   ```bash
    cd recommender
    python recommender.py
    cd ..
    ```
 
-7. **Run the Application**
+3. **Frontend Setup**
    ```bash
+   cd frontend
+   npm install  # or yarn install
+   npm run dev  # or yarn dev
+   ```
+
+4. **Run the Backend**
+   ```bash
+   cd backend
    uvicorn main:app --reload --host 0.0.0.0 --port 8000
    ```
