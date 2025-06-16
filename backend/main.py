@@ -1,6 +1,7 @@
 #api endpoints i want to get project details, then 
 from typing import Annotated, Optional, List
 from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Field, Session, SQLModel, create_engine, select, Relationship
 import spacy
 from pathlib import Path
@@ -19,6 +20,9 @@ class Recommendation(SQLModel, table= True):
     tech_stack_json : str
     reason_json : str
     project: Optional[Project] = Relationship(back_populates="recommendations")
+
+class RecommendationRequest(SQLModel):
+    project_id: int
     
 TECH_STACK_MAP = {
     "web_app": {
@@ -91,6 +95,30 @@ TECH_STACK_MAP = {
             "deployment": ["Enterprise Distribution", "A/B Testing"],
             "tools": ["Performance Monitoring", "Crash Analytics", "Security"]
         }
+    },
+
+    "ml_task": {
+        "simple": {
+            "frontend": ["Streamlit", "Gradio", "Jupyter Notebooks"],
+            "backend": ["Python", "scikit-learn", "pandas"],
+            "database": ["SQLite", "CSV files", "Pandas DataFrames"],
+            "deployment": ["Heroku", "Streamlit Cloud", "Google Colab"],
+            "tools": ["Jupyter", "VS Code", "Git", "NumPy"]
+        },
+        "medium": {
+            "frontend": ["Streamlit", "Dash", "Plotly"],
+            "backend": ["Python", "scikit-learn", "TensorFlow/PyTorch", "FastAPI"],
+            "database": ["PostgreSQL", "MongoDB", "Redis"],
+            "deployment": ["Docker", "AWS SageMaker", "Google Cloud AI"],
+            "tools": ["MLflow", "Weights & Biases", "DVC", "Jupyter"]
+        },
+        "complex": {
+            "frontend": ["Custom ML Dashboard", "React + D3.js", "TensorBoard"],
+            "backend": ["Distributed ML Pipeline", "TensorFlow/PyTorch", "Ray", "Kubernetes"],
+            "database": ["Vector DB", "Time Series DB", "Data Lake"],
+            "deployment": ["Kubernetes", "MLOps Pipeline", "Model Serving"],
+            "tools": ["MLflow", "Kubeflow", "Airflow", "Monitoring Tools"]
+        }
     }
 }
 
@@ -111,6 +139,14 @@ def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"], # Replace with your frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.on_event("startup")
 def on_startup():
@@ -163,9 +199,9 @@ def create_project(project: Project, session: SessionDep):
     return project
 
 @app.post("/recommendations")
-def create_recommendations(project_id: int, session: SessionDep):
+def create_recommendations(request: RecommendationRequest, session: SessionDep):
     model = get_model()
-    project = session.get(Project, project_id)
+    project = session.get(Project, request.project_id)
     
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
@@ -176,7 +212,7 @@ def create_recommendations(project_id: int, session: SessionDep):
     recommendation_text = generate_techstack_recommendations(classifications, project.project_complexity)
     
     return {
-        "project_id": project_id,
+        "project_id": request.project_id,
         "classifications": classifications,
         "description": project.description,
         "recommendation": recommendation_text
